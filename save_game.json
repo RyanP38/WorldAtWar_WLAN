@@ -1,0 +1,13 @@
+{
+    "players": [
+        { "id": 1, "name": "Germany", "resources": 50 },
+        { "id": 2, "name": "Britain", "resources": 45 }
+    ],
+    "territories": {
+        "TerritoryA": { "owner": "Germany", "units": { "infantry": 3 } },
+        "TerritoryB": { "owner": "Britain", "units": { "tank": 1 } }
+    },
+    "turnOrder": ["Germany", "Britain", "France", "Japan", "Russia", "USA", "China"],
+    "currentTurn": 1,
+    "phase": "combat_movement"
+}

@@ -1,0 +1,68 @@
+@startuml
+
+participant "Client (Player)" as Client
+participant "Server (Host)" as Server
+
+== Player Joins Game ==
+Client -> Server: join_room(roomCode, playerId)
+alt Room Code Valid
+    Server -> Client: join_success(assignedNations)
+else Room Code Invalid
+    Server -> Client: join_error("Invalid room code")
+end
+
+== Game State Sync ==
+Client -> Server: game_state_request()
+Server -> Client: game_state_update(currentTurn, phase, territories, players)
+
+== Unit Movement ==
+Client -> Server: move_unit(playerId, unitId, from, to)
+alt Valid Move
+    Server -> Client: unit_moved(playerId, unitId, from, to)
+    Server -> Client: broadcast(unit_moved)
+else Invalid Move
+    Server -> Client: move_error("Invalid move: Non-adjacent territory")
+end
+
+== Unit Purchase ==
+Client -> Server: purchase_units(playerId, buys)
+alt Valid Purchase
+    Server -> Client: purchase_accepted(playerId, buys)
+    Server -> Client: broadcast(purchase_accepted)
+else Insufficient Resources
+    Server -> Client: purchase_error("Not enough resources")
+end
+
+== End Turn ==
+Client -> Server: next_turn()
+Server -> Client: turn_update(newTurn)
+Server -> Client: broadcast(turn_update)
+
+== Combat Phase ==
+Server -> Client: combat_trigger(territory, attackerUnits, defenderUnits)
+Client -> Server: combat_board_open(territory)
+Client -> Server: combat_result(combatId, winner, attackerSurvivors, defenderDestroyed)
+Server -> Client: combat_resolved(combatId, winner)
+Server -> Client: broadcast(combat_resolved)
+
+== Undo Actions ==
+Client -> Server: undo_action(playerId)
+alt Undo Allowed
+    Server -> Client: undo_success("Last action undone")
+else Undo Not Possible
+    Server -> Client: undo_error("Cannot undo after phase transition")
+end
+
+== Reconnection ==
+Client -> Server: player_reconnect(playerId)
+alt Successful Reconnection
+    Server -> Client: reconnect_success(gameState)
+else Reconnection Failed
+    Server -> Client: reconnect_failed("Session expired")
+end
+
+== Messaging System ==
+Client -> Server: send_message(playerId, message)
+Server -> Client: broadcast(receive_message)
+
+@enduml
