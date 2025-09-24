@@ -1,0 +1,49 @@
+load .json files using: 
+    json = require('dkjson')
+
+read .json files using:
+    local file_content = love.filesystem.read('file.json')
+
+decode .json files using:
+    local obj, pos, errr = json.decode (file_content, starting_position, nil)
+
+Example from dkolf.de/dkjson-lua/:
+local str = [[
+{
+  "numbers": [ 2, 3, -20.23e+2, -4 ],
+  "currency": "\u20AC"
+}
+]]
+
+local obj, pos, err = json.decode (str, 1, nil)
+if err then
+  print ("Error:", err)
+else
+  print ("currency", obj.currency)
+  for i = 1,#obj.numbers do -- # is the same as len()
+    print (i, obj.numbers[i])
+  end
+end
+
+
+
+
+---- POLYGON DATA ----
+
+--- FORMATTING ---
+{ "polygonData" :{ 
+    "CENTRAL_CANADA" :{
+        "CENTRAL_CANADA1" :[1,2,3,4],
+        "CENTRAL_CANADA2" :[5,6,7,8]
+    }, 
+    "EASTERN_CANADA": [9,10,11,12]
+}}
+
+--- ACCESSING ---
+obj.polygonData.i = "TERRITORY_NAME"
+obj.polygonData.i[j] = jth path in territory i
+obj.polygonData.i[j][k] = kth x/y value of jth path in territory i
+obj.polygonData.CENTRAL_CANADA.CENTRAL_CANADA1 = [1,2,3,4]
+obj.polygonData.CENTRAL_CANADA.CENTRAL_CANADA2 = [5,6,7,8]
+obj.polygonData.CENTRAL_CANADA.CENTRAL_CANADA2[1] = 5
+obj.polygonData.EASTERN_CANADA[1] = 9
